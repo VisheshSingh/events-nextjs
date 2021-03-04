@@ -1,10 +1,8 @@
-import Head from 'next/head';
+import EventList from '../components/events/EventList';
+import { getFeaturedEvents } from '../dummy-data';
 import styles from '../styles/Home.module.css';
 
 export default function Home() {
-  return (
-    <div className={styles.container}>
-      <h1>Show all featured events</h1>
-    </div>
-  );
+  const featuredEvents = getFeaturedEvents();
+  return <EventList items={featuredEvents} />;
 }
