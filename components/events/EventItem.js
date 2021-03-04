@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from 'next/Link';
 import styles from './EventItem.module.css';
 import DateIcon from '../icons/date-icon';
 import AddressIcon from '../icons/address-icon';
