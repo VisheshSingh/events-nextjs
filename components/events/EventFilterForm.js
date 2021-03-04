@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import Button from '../ui/button';
 import styles from './EventFilterForm.module.css';
 
-const EventFilterForm = () => {
+const EventFilterForm = (props) => {
+  const yearRef = useRef(null);
+  const monthRef = useRef(null);
+
   const months = [
     'January',
     'February',
@@ -20,6 +23,9 @@ const EventFilterForm = () => {
 
   const filterEvents = (e) => {
     e.preventDefault();
+    const year = yearRef.current.value;
+    const month = monthRef.current.value;
+    props.onSearch(year, month);
   };
 
   return (
@@ -27,14 +33,14 @@ const EventFilterForm = () => {
       <div className={styles.controls}>
         <div className={styles.control}>
           <label htmlFor='year'>Year</label>
-          <select id='year'>
+          <select id='year' ref={yearRef}>
             <option value='2021'>2021</option>
             <option value='2022'>2022</option>
           </select>
         </div>
         <div className={styles.control}>
           <label htmlFor='month'>Month</label>
-          <select id='month'>
+          <select id='month' ref={monthRef}>
             {months.map((month, idx) => (
               <option key={idx + 1} value={idx + 1}>
                 {month}
