@@ -3,6 +3,7 @@ import { getAllEvents } from '../../utils/api-utils';
 import EventList from '../../components/events/EventList';
 import { useRouter } from 'next/router';
 import EventFilterForm from '../../components/events/EventFilterForm';
+import Head from 'next/head';
 
 const AllEventsPage = (props) => {
   const router = useRouter();
@@ -13,6 +14,13 @@ const AllEventsPage = (props) => {
   };
   return (
     <>
+      <Head>
+        <title>All Events</title>
+        <meta
+          name='description'
+          content='Find a bunch of events to evolve...'
+        />
+      </Head>
       <EventFilterForm onSearch={filterHandler} />
       <EventList items={props.events} />
     </>

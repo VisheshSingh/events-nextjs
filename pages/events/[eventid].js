@@ -4,6 +4,7 @@ import EventSummary from '../../components/events/EventSummary';
 import { getEventById, getAllEvents } from '../../utils/api-utils';
 import EventContent from '../../components/events/EventContent';
 import ErrorAlert from '../../components/events/ErrorAlert';
+import Head from 'next/head';
 
 const EventDetailsPage = (props) => {
   const event = props.selectedEvent;
@@ -14,6 +15,13 @@ const EventDetailsPage = (props) => {
 
   return (
     <>
+      <Head>
+        <title>{event.title}</title>
+        <meta
+          name='description'
+          content='Find a bunch of events to evolve...'
+        />
+      </Head>
       <EventSummary title={event.title} />
       <EventLogistics
         date={event.date}
