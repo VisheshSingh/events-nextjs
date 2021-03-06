@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { connectDB, insertDocument } from '../../utils/db-utils';
 
 export default async (req, res) => {
   if (req.method === 'POST') {
@@ -7,12 +7,22 @@ export default async (req, res) => {
       return res.status(422).json({ message: 'Invalid email!' });
     }
 
-    const client = await MongoClient.connect(
-      `mongodb+srv://test1234:test1234@cluster0.gvoli.mongodb.net/events?retryWrites=true&w=majority`
-    );
-    const db = client.db();
-    await db.collection('newsletter').insertOne({ email });
-    client.close();
+    let client;
+
+    try {
+      client = await connectDB();
+    } catch (error) {
+      res.status(500).json({ message: 'Connection to DB failed!' });
+      return;
+    }
+
+    try {
+      await insertDocument(client, 'newsletter', { email });
+      client.close();
+    } catch (error) {
+      res.status(500).json({ message: 'Inserting a document failed!' });
+      return;
+    }
 
     res
       .status(201)

@@ -1,10 +1,19 @@
-import { MongoClient } from 'mongodb';
-import { getAllDocuments } from '../../../utils/db-utils';
+import {
+  getAllDocuments,
+  connectDB,
+  insertDocument,
+} from '../../../utils/db-utils';
+
 export default async (req, res) => {
   const eventId = req.query.eventId;
-  const client = await MongoClient.connect(
-    `mongodb+srv://test1234:test1234@cluster0.gvoli.mongodb.net/events?retryWrites=true&w=majority`
-  );
+  let client;
+
+  try {
+    client = await connectDB();
+  } catch (error) {
+    res.status(500).json({ message: 'Connecting to DB failed!' });
+    return;
+  }
 
   if (req.method === 'POST') {
     const { email, name, text } = req.body;
@@ -17,6 +26,8 @@ export default async (req, res) => {
       text.trim() === ''
     ) {
       res.status(422).json({ message: 'Invalid data provided!' });
+      client.close();
+      return;
     }
 
     const newComment = {
@@ -26,22 +37,30 @@ export default async (req, res) => {
       eventId,
     };
 
-    const db = client.db();
+    try {
+      const result = await insertDocument(client, 'comments', newComment);
+      newComment._id = result.insertedId;
+      res.status(201).json({ message: 'Comment added', comment: newComment });
+    } catch (error) {
+      res.status(500).json({ message: 'Inserting a doc failed!' });
+    }
 
-    const result = await db.collection('comments').insertOne(newComment);
     // console.log(result);
-    newComment.id = result.insertedId;
-    res.status(201).json({ message: 'Comment added', comment: newComment });
   }
 
   if (req.method === 'GET') {
-    const documents = await getAllDocuments(
-      client,
-      'comments',
-      { _id: -1 },
-      { eventId: eventId }
-    );
-    return res.status(200).json({ comments: documents });
+    try {
+      const documents = await getAllDocuments(
+        client,
+        'comments',
+        { _id: -1 },
+        { eventId: eventId }
+      );
+      res.status(200).json({ comments: documents });
+    } catch (err) {
+      res.status(500).json({ message: 'Error fetching the comments!' });
+    }
   }
+
   client.close();
 };

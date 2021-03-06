@@ -45,8 +45,10 @@ function NewsletterRegistration() {
           <button>Register</button>
         </div>
       </form>
-      {isInvalid && <p>Please enter a valid email address</p>}
-      {emailSuccess && <p>{emailSuccess}</p>}
+      {isInvalid && (
+        <p className='center'>Please enter a valid email address</p>
+      )}
+      {emailSuccess && <p className='center'>{emailSuccess}</p>}
     </section>
   );
 }
