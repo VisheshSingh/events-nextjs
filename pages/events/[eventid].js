@@ -5,6 +5,7 @@ import { getEventById, getAllEvents } from '../../utils/api-utils';
 import EventContent from '../../components/events/EventContent';
 import ErrorAlert from '../../components/events/ErrorAlert';
 import Head from 'next/head';
+import Comments from '../../components/input/Comments';
 
 const EventDetailsPage = (props) => {
   const event = props.selectedEvent;
@@ -30,6 +31,7 @@ const EventDetailsPage = (props) => {
         imageAlt={event.title}
       />
       <EventContent>{event.description}</EventContent>
+      <Comments eventId={event.id} />
     </>
   );
 };
