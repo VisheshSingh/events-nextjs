@@ -1,10 +1,12 @@
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
+import notificationContext from '../../context/Notification/notificationContext';
 import classes from './newsletter-registration.module.css';
 
 function NewsletterRegistration() {
   const emailInputRef = useRef(null);
   const [isInvalid, setIsInvalid] = useState(false);
-  const [emailSuccess, setEmailSuccess] = useState('');
+  const notificationCtx = useContext(notificationContext);
+  const { notification, showNotification } = notificationCtx;
 
   function registrationHandler(event) {
     event.preventDefault();
@@ -15,6 +17,12 @@ function NewsletterRegistration() {
       return;
     }
 
+    showNotification({
+      title: 'Signing up...',
+      status: 'pending',
+      message: 'Registering to the newsletter',
+    });
+
     fetch(`/api/newsletter`, {
       method: 'POST',
       headers: {
@@ -22,11 +30,30 @@ function NewsletterRegistration() {
       },
       body: JSON.stringify({ email }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+
+        return res.json().then((data) => {
+          throw new Error(data.message || 'Something went wrong!');
+        });
+      })
       .then((data) => {
-        setEmailSuccess(data.message);
+        showNotification({
+          title: 'Success!',
+          status: 'success',
+          message: 'Successfully registered for the newsletter!',
+        });
         setIsInvalid(false);
         emailInputRef.current.value = '';
+      })
+      .catch((error) => {
+        showNotification({
+          title: 'Error!',
+          status: 'error',
+          message: error.message || 'Something went wrong!',
+        });
       });
   }
 
@@ -48,7 +75,6 @@ function NewsletterRegistration() {
       {isInvalid && (
         <p className='center'>Please enter a valid email address</p>
       )}
-      {emailSuccess && <p className='center'>{emailSuccess}</p>}
     </section>
   );
 }
